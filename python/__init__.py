@@ -35,7 +35,7 @@ def CLIP_VL_image_caption( image_filepath : str ) -> str:
 	]
 	# load images
 	pil_images = load_pil_images( conversation )
-	pil_images = [ image.resize((1024,1024)) for image in pil_images ]
+	pil_images = [ image.resize((768,768)) for image in pil_images ]
 	# prepare inputs
 	prepare_inputs = vl_chat_processor( conversations=conversation, images=pil_images, force_batchify=True ).to(vl_gpt.device)
 	del pil_images
@@ -99,7 +99,7 @@ def ask_for_image() -> None:
 
 def caption_directory() -> None:
 	while True:
-		print("Enter the root directory that you want to CLIP caption using a VL-LLM.")
+		print("Enter the directory that you want to CLIP caption using a VL-LLM.")
 		target_directory : str = input("")
 		if os.path.isdir(target_directory) is False:
 			print("Invalid directory path.")
@@ -122,8 +122,6 @@ def caption_subdirs() -> None:
 		clip_subdirs(target_directory, tag_ext="txt")
 
 if __name__ == '__main__':
-	caption_directory()
+	caption_subdirs()
 
-# C:\Users\Declan\Desktop\test.jpg
-# C:\Users\Declan\Desktop\test2.jpg
-# C:\Users\Declan\Desktop\test3.jpg
+# C:\Users\Declan\Desktop\Training
