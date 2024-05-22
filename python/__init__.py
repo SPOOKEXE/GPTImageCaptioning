@@ -19,7 +19,7 @@ vl_gpt : MultiModalityCausalLM = AutoModelForCausalLM.from_pretrained(model, tru
 vl_gpt = vl_gpt.to(torch.bfloat16).cuda().eval()
 
 # caption function
-def caption_image( image_filepath : str ) -> str:
+def CLIP_VL_image_caption( image_filepath : str ) -> str:
 	if os.path.exists(image_filepath) is False:
 		print("Given image does not exist.")
 		return None
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 	while True:
 		print("Enter the filepath of the image you want to caption.")
 		filepath : str = input("")
-		answer = caption_image( filepath )
+		answer = CLIP_VL_image_caption( filepath )
 		print(answer)
 
 # C:\Users\Declan\Desktop\test.jpg
