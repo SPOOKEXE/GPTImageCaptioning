@@ -122,6 +122,7 @@ def caption_subdirs() -> None:
 		clip_subdirs(target_directory, tag_ext="txt")
 
 if __name__ == '__main__':
-	caption_subdirs()
+	caption_directory()
 
+# C:\Users\Declan\Desktop\test
 # C:\Users\Declan\Desktop\Training
