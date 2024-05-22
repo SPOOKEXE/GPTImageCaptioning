@@ -2,14 +2,14 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from deepseek_vl.models import VLChatProcessor, MultiModalityCausalLM
 from deepseek_vl.utils.io import load_pil_images
-from typing import Literal
 
 import torch
 import os
 
 # available models
 model : str = "deepseek-ai/deepseek-vl-7b-chat" # "deepseek-ai/deepseek-vl-7b-base"
-base_prompt : str = """<image_placeholder>You are the best captioning bot in the world. Caption this image in the style of CLIP. Include worn clothing, pose, estimated age, estimated ethnicity, if its explicit, quesitonable or explicit. Exclude background objects like furniture but include big-picture subjects like 'pools' or 'bedroom'. Only caption the first image. If there is no person in the image, simply output 'No person in image.'"""
+base_prompt : str = """You are the best captioning bot in the world. Caption the below image in the style of CLIP. If there is no person, caption what you can see.
+<image_placeholder>"""
 
 # models and processors
 vl_chat_processor : VLChatProcessor = VLChatProcessor.from_pretrained(model)
@@ -21,18 +21,12 @@ vl_gpt = vl_gpt.to(torch.bfloat16).cuda().eval()
 # caption function
 def caption_image( image_filepath : str ) -> str:
 	conversation : list[dict] = [
-		{
-			"role": "User",
-			"content": base_prompt,
-			"images": [image_filepath]
-		},
-		{
-			"role": "Assistant",
-			"content": ""
-		}
+		{ "role": "User", "content": base_prompt, "images": [image_filepath] },
+		{ "role": "Assistant", "content": "" }
 	]
 	# load images and prepare for inputs
 	pil_images = load_pil_images( conversation )
+	pil_images = [ image.resize((1024,1024)) for image in pil_images ]
 	prepare_inputs = vl_chat_processor( conversations=conversation, images=pil_images, force_batchify=True ).to(vl_gpt.device)
 	# run image encoder to get the image embeddings
 	inputs_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs)
@@ -63,3 +57,5 @@ if __name__ == '__main__':
 	print(formatt)
 	print("=======")
 	print(answer)
+
+# C:\Users\Declan\Desktop\test.jpg
