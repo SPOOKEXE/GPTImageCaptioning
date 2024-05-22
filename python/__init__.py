@@ -59,14 +59,14 @@ def CLIP_VL_image_caption( image_filepath : str ) -> str:
 	del inputs_embeds
 	return decoded
 
-def clip_directory( directory : str, tag_ext : str = "txt" ) -> None:
+def clip_directory( directory : str, tag_ext : str = "txt", overwrite_captions : bool = True ) -> None:
 	for filename in os.listdir(directory):
 		filepath : str = os.path.join(directory, filename)
 		if os.path.isfile(filepath) is False:
 			continue
 		raw_name, _ = os.path.splitext(filename)
 		caption_filepath : str = f"{directory}/{raw_name}.{tag_ext}"
-		if os.path.exists(caption_filepath) is True:
+		if overwrite_captions is False and os.path.exists(caption_filepath) is True:
 			print(f"Caption already exists for {raw_name} under { os.path.split(directory)[-1] } ")
 			continue
 		try:
