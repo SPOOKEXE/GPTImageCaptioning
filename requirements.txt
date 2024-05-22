@@ -1,0 +1,25 @@
+accelerate
+aiohttp
+asyncio
+python-dotenv
+fastapi
+lanarky
+langchain
+langchain[all]
+langchain[TextGen]
+markdownify
+numba
+numpy
+packaging
+peft
+pydantic
+pydantic-settings
+safetensors
+sentencepiece
+tiktoken
+transformers
+tuna
+uvicorn
+wikipedia
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# git clone https://github.com/deepseek-ai/DeepSeek-VL && cd DeepSeek-VL && pip install -e . && cd .. && rmdir /Q /S DeepSeek-VL
