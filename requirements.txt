@@ -22,4 +22,4 @@ tuna
 uvicorn
 wikipedia
 # pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-# git clone https://github.com/deepseek-ai/DeepSeek-VL && cd DeepSeek-VL && pip install -e . && cd .. && rmdir /Q /S DeepSeek-VL
+# git clone https://github.com/deepseek-ai/DeepSeek-VL && cd DeepSeek-VL && pip install -r requirements.txt && cd ..
