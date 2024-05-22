@@ -8,7 +8,8 @@ import os
 
 # available models
 model : str = "deepseek-ai/deepseek-vl-7b-chat" # "deepseek-ai/deepseek-vl-7b-base"
-base_prompt : str = """You are the best captioning bot in the world. CLIP caption the below image and include their ethnicity, estimated age, estimated height, hair color, eye color and such, all in one sentence using commas. Keep it succinct and emotionless.
+base_prompt : str = """You are the best captioning bot in the world. CLIP caption the below image and include their ethnicity, estimated age, estimated height, hair color, eye color and such, all in one sentence using commas. Keep it succinct and do not include emotions.
+An example of a caption text is "A young woman, likely in her early twenties, with long dark hair, is covering her face with her hands, she is wearing a white shirt and white underwear, and she is sitting on a bed with a white sheet.".
 <image_placeholder>"""
 
 # models and processors
@@ -65,3 +66,5 @@ if __name__ == '__main__':
 		print(answer)
 
 # C:\Users\Declan\Desktop\test.jpg
+# C:\Users\Declan\Desktop\test2.jpg
+# C:\Users\Declan\Desktop\test3.jpg
