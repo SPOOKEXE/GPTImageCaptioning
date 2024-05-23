@@ -1,6 +1,8 @@
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
+from transformers import InstructBlipForConditionalGeneration, InstructBlipProcessor
+
 from PIL import Image, ImageFile
 
 from deepseek_vl.models import VLChatProcessor, MultiModalityCausalLM
@@ -41,16 +43,17 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 # 	att_mask = prepare_inputs.attention_mask
 # 	del prepare_inputs
 # 	# run the model to get the response
-# 	outputs = vl_gpt.language_model.generate(
-# 		inputs_embeds=inputs_embeds,
-# 		attention_mask=att_mask,
-# 		pad_token_id=tokenizer.eos_token_id,
-# 		bos_token_id=tokenizer.bos_token_id,
-# 		eos_token_id=tokenizer.eos_token_id,
-# 		max_new_tokens=512,
-# 		do_sample=False,
-# 		use_cache=True
-# 	)
+# 	with torch.inference_mode():
+# 		outputs = vl_gpt.language_model.generate(
+# 			inputs_embeds=inputs_embeds,
+# 			attention_mask=att_mask,
+# 			pad_token_id=tokenizer.eos_token_id,
+# 			bos_token_id=tokenizer.bos_token_id,
+# 			eos_token_id=tokenizer.eos_token_id,
+# 			max_new_tokens=512,
+# 			do_sample=False,
+# 			use_cache=True
+# 		)
 # 	del att_mask
 # 	decoded = tokenizer.decode(outputs[0].cpu().tolist(), skip_special_tokens=True)
 # 	del inputs_embeds
@@ -66,27 +69,26 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 # 		prompt = f"[INST] {prompt} [/INST]"
 # 	image = Image.open(image_filepath)
 # 	inputs = processor(prompt, image, return_tensors="pt").to("cuda:0")
-# 	output = model.generate(**inputs, max_new_tokens=100)
+# 	with torch.inference_mode():
+# 		output = model.generate(**inputs, max_new_tokens=100)
 # 	del inputs
 # 	return processor.decode(output[0], skip_special_tokens=True)
 
-from transformers import InstructBlipForConditionalGeneration, InstructBlipProcessor
-
-model_name = "Salesforce/instructblip-flan-t5-xl" # "Salesforce/instructblip-vicuna-7b"
+model_name = "Salesforce/instructblip-vicuna-7b" # "Salesforce/instructblip-flan-t5-xl"
 processor = InstructBlipProcessor.from_pretrained(model_name)
 model = InstructBlipForConditionalGeneration.from_pretrained(model_name, torch_dtype=torch.float16, device_map="auto")
 
 def caption_raw_image(
 	image: Image.Image,
 	prompt: str,
-	text_decoding_method: str = "Nucleus sampling",
-	num_beams: int = 5,
+	text_decoding_method: str = "Beam search",
+	num_beams: int = 16,
 	max_length: int = 256,
-	min_length: int = 1,
-	top_p: float = 0.9,
+	min_length: int = 10,
+	top_p: float = 1,
 	repetition_penalty: float = 1.5,
 	length_penalty: float = 1.0,
-	temperature: float = 1.0,
+	temperature: float = 1,
 ) -> str:
 	h, w = image.size
 	scale = 1024 / max(h, w)
@@ -95,18 +97,19 @@ def caption_raw_image(
 		new_h = int(h * scale)
 		image = image.resize((new_w, new_h), resample=Image.Resampling.LANCZOS)
 	inputs = processor(images=image, text=prompt, return_tensors="pt").to("cuda", torch.float16)
-	generated_ids = model.generate(
-		**inputs,
-		do_sample=text_decoding_method=="Nucleus sampling",
-		num_beams=num_beams,
-		max_length=max_length,
-		min_length=min_length,
-		top_p=top_p,
-		repetition_penalty=repetition_penalty,
-		length_penalty=length_penalty,
-		temperature=temperature,
-	)
-	return processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
+	with torch.inference_mode():
+		generated_ids = model.generate(
+			**inputs,
+			do_sample=text_decoding_method=="Nucleus sampling",
+			num_beams=num_beams,
+			max_length=max_length,
+			min_length=min_length,
+			top_p=top_p,
+			repetition_penalty=repetition_penalty,
+			length_penalty=length_penalty,
+			temperature=temperature,
+		)
+		return processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
 
 def CLIP_VL_image_caption(image_filepath: str) -> str:
 	return caption_raw_image( Image.open(image_filepath), "" )
