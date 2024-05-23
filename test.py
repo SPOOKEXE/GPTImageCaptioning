@@ -6,7 +6,7 @@ import torch
 model = AutoModel.from_pretrained("unum-cloud/uform-gen2-qwen-500m", trust_remote_code=True)
 processor = AutoProcessor.from_pretrained("unum-cloud/uform-gen2-qwen-500m", trust_remote_code=True)
 
-prompt = "Question or Instruction"
+prompt = "Caption the target image."
 image = Image.open("C:\\Users\\Declan\\Desktop\\Test\\img\\15_AnjyuKouzuki\\b_st2_natsusyoujyo01_kouzuki_a07_001.jpg")
 
 inputs = processor(text=[prompt], images=[image], return_tensors="pt")
