@@ -1,4 +1,11 @@
-You are the best captioning bot in the world and follow instructions appropriately.
-Caption the image in one sentence and include their clothing and outfit, ethnicity or race, estimated height, estimated age, hair color, eye color, pose and any additional information about the subject.
-Utilise commas for separation and create one long sentence describing the subject. Do not include emotion descriptions.
 <image_placeholder>
+
+Caption the provided image of the person and include the following information about them:
+- outfit/clothes of the person.
+- ethnicity of the person.
+- numerical age of the person.
+- height of the person using feet and inches.
+- pose of the person.
+- expression of the person.
+
+Summarize the caption into one or two sentences describing the person with all the information. Do not make a checklist.

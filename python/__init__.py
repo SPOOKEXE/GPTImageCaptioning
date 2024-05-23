@@ -35,7 +35,7 @@ def CLIP_VL_image_caption( image_filepath : str ) -> str:
 	]
 	# load images
 	pil_images = load_pil_images( conversation )
-	pil_images = [ image.resize((768,768)) for image in pil_images ]
+	pil_images = [ image.resize((512,512)) for image in pil_images ]
 	# prepare inputs
 	prepare_inputs = vl_chat_processor( conversations=conversation, images=pil_images, force_batchify=True ).to(vl_gpt.device)
 	del pil_images
@@ -123,6 +123,7 @@ def caption_subdirs() -> None:
 
 if __name__ == '__main__':
 	caption_directory()
+	# caption_subdirs()
 
 # C:\Users\Declan\Desktop\test
 # C:\Users\Declan\Desktop\Training
