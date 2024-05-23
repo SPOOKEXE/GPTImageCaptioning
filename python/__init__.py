@@ -1,4 +1,5 @@
 
+import time
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from PIL import Image, ImageFile
 
@@ -35,7 +36,7 @@ def CLIP_VL_image_caption( image_filepath : str ) -> str:
 	]
 	# load images
 	pil_images = load_pil_images( conversation )
-	pil_images = [ image.resize((512,512)) for image in pil_images ]
+	pil_images = [ image.resize((1024,1024)) for image in pil_images ]
 	# prepare inputs
 	prepare_inputs = vl_chat_processor( conversations=conversation, images=pil_images, force_batchify=True ).to(vl_gpt.device)
 	del pil_images
@@ -60,7 +61,9 @@ def CLIP_VL_image_caption( image_filepath : str ) -> str:
 	return decoded
 
 def clip_directory( directory : str, tag_ext : str = "txt", overwrite_captions : bool = True ) -> None:
-	for filename in os.listdir(directory):
+	items = os.listdir(directory)
+	last : float = time.time()
+	for index, filename in enumerate(items):
 		filepath : str = os.path.join(directory, filename)
 		if os.path.isfile(filepath) is False:
 			continue
@@ -74,10 +77,13 @@ def clip_directory( directory : str, tag_ext : str = "txt", overwrite_captions :
 			del img
 		except:
 			continue
-		print(f'Captioning image file {filename} under { os.path.split(directory)[-1] }')
+		print(f'Captioning image {index+1}/{len(items)} - {filename} under { os.path.split(directory)[-1] }')
 		caption : str = CLIP_VL_image_caption( filepath )
 		with open(caption_filepath, 'w') as file:
 			file.write(caption.strip())
+		now : float = time.time()
+		print(f"Estimating { round((now-last) * (len(items) - index), 1) } seconds left.")
+		last = now
 
 def clip_subdirs( directory : str, tag_ext : str = "txt" ) -> None:
 	for dirname in os.listdir( directory ):
